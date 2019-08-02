@@ -1,0 +1,8 @@
+<library   file="*.cc" name="RecoEgammaEgammaDBToolsPlugins">
+  <flags   EDM_PLUGIN="1"/>
+  <use   name="FWCore/Framework"/>
+  <use   name="CondCore/PluginSystem"/>
+  <use   name="CondCore/DBOutputService"/>
+  <use   name="CondFormats/DataRecord"/>
+  <use   name="CondFormats/EgammaObjects"/>
+</library>
