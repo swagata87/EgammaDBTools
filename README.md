@@ -38,7 +38,7 @@ The steps are as follows:
 3. if needed, combine those tags to create a single tag for data which uses run number to determine which GBRForest to read
 4. queue those tags into the appropriate global tag
 
-### conversion from root to db format
+### Conversion from root to db format
 
 This is done by [gbrForestDBWriter.py](test/gbrForestDBWriter.py). This calls the [GBRForestDBWriter](plugins/GBRForestDBWriter.cc) plugin to do the work via cmsRun. Example command:
 
@@ -103,9 +103,8 @@ python RecoEgamma/EgammaDBTools/test/makeMultiEraULRegTag.py regCombTmp/regCombT
 ```
 with the "--prod" string indicating to upload to production.  It also makes a bunch of temporary files for uploading so the first argument is the best name of that which is then added to. Note: it will delete all files starting with that pattern! It also assumes the directory exists, otherwise it will fail. 
 
+###  Queuing tags for a GlobalTag
 
-
-
-
+This is done with the [conddb website](https://cms-conddb.cern.ch/cmsDbBrowser/index/Prod) via "Global Tags" -> "Request Tag for GT". Please see slides 9 + 10 of the [tutorial](https://indico.cern.ch/event/828624/contributions/3468660/attachments/1863655/3063691/talk3_-_new_payloads__release_to_db_and_inclusion_in_global_tag_2019.pdf) for a more detailed explaination. 
 
 
