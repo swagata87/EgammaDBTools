@@ -47,7 +47,7 @@ for entry in regres_data:
         filename = entry["filename"].format(region=region)
         dbLabel = entry["dbLabel"].format(region_lower=region.lower())
         fileLabel = entry["fileLabel"].format(region=region)
-        cmd = "cmsRun RecoEgamma/EgammaTools/test/gbrForestDBWriter.py gbrFilename={filename} fileLabel={fileLabel} dbLabel={dbLabel} dbFilename={dbFilename} dbTag={dbTag}".format(filename=regres_dir+filename,fileLabel=fileLabel,dbLabel=dbLabel,dbTag=dbLabel+dbTagSuffix,dbFilename=outputFile)
+        cmd = "cmsRun RecoEgamma/EgammaDBTools/test/gbrForestDBWriter.py gbrFilename={filename} fileLabel={fileLabel} dbLabel={dbLabel} dbFilename={dbFilename} dbTag={dbTag}".format(filename=regres_dir+filename,fileLabel=fileLabel,dbLabel=dbLabel,dbTag=dbLabel+dbTagSuffix,dbFilename=outputFile)
         print cmd
         subprocess.Popen(cmd.split()).communicate()
         toget_str += """cms.PSet(record = cms.string("GBRDWrapperRcd"),
