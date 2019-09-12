@@ -32,6 +32,28 @@ def get_elepho_tagnames():
             "photon_ee_ecalOnly_5To300_0p0002To0p5_sigma{}"
             ]
 
+def get_pfcluseb_tagnames():
+    return ["ecalPFClusterCor{}_EB_Full_ptbin1_mean_25ns",
+            "ecalPFClusterCor{}_EB_Full_ptbin1_sigma_25ns",
+            "ecalPFClusterCor{}_EB_Full_ptbin2_mean_25ns",
+            "ecalPFClusterCor{}_EB_Full_ptbin2_sigma_25ns",
+            "ecalPFClusterCor{}_EB_Full_ptbin3_mean_25ns",
+            "ecalPFClusterCor{}_EB_Full_ptbin3_sigma_25ns",
+            "ecalPFClusterCor{}_EB_ZS_mean_25ns",
+            "ecalPFClusterCor{}_EB_ZS_sigma_25ns",
+            ]
+
+def get_pfclusee_tagnames():
+    return ["ecalPFClusterCor{}_EE_Full_ptbin1_mean_25ns",
+            "ecalPFClusterCor{}_EE_Full_ptbin1_sigma_25ns",
+            "ecalPFClusterCor{}_EE_Full_ptbin2_mean_25ns",
+            "ecalPFClusterCor{}_EE_Full_ptbin2_sigma_25ns",
+            "ecalPFClusterCor{}_EE_Full_ptbin3_mean_25ns",
+            "ecalPFClusterCor{}_EE_Full_ptbin3_sigma_25ns",
+            "ecalPFClusterCor{}_EE_ZS_mean_25ns",
+            "ecalPFClusterCor{}_EE_ZS_sigma_25ns",
+            ]
+
 
 def copy_tags_locally(tags,eras,prefix):
     for tag in tags:
@@ -41,6 +63,7 @@ def copy_tags_locally(tags,eras,prefix):
             subprocess.Popen(cmd.split(),stdin=subprocess.PIPE).communicate(input='y')
     
 def combine_tags(tags,eras,file_prefix,tag_suffix,database,uploadtxt):
+    copy_tags_locally(tags=tags,eras=eras,prefix=file_prefix)
     tag_files = []
     for tag in tags:
         combinedtag = tag.format(tag_suffix)
@@ -69,6 +92,9 @@ if __name__ == "__main__":
     parser.add_argument('dbfilebase')
     parser.add_argument('--prod',action='store_true',help='upload to production database')
     parser.add_argument('--txt',required=True,help="user text for upload")
+    parser.add_argument('--sc',action='store_true',help='do supercluster regressions')
+    parser.add_argument('--elepho',action='store_true',help='do ele/pho regressions')
+    parser.add_argument('--pfclus',action='store_true',help='do pfclus regressions')
     args = parser.parse_args()
 
     elepho_eras = [{"suffix" : "_2017ULV2", "run" : 1 },
@@ -78,10 +104,20 @@ if __name__ == "__main__":
                {"suffix" : "_2017UL", "run" : 288377},
                {"suffix" : "_2018UL", "run" : 314472}]
     
+    pfcluseb_eras = [{"suffix" : "2017ULV1", "run" : 1 },
+                     {"suffix" : "2018ULV1", "run" : 314472}]
+    #we use 2018V1 for 2017UL endcap
+    pfclusee_eras = [{"suffix" : "2018V1", "run" : 1 },
+                     {"suffix" : "2018ULV1", "run" : 314472}]
+    
+
     combined_tag_suffix = "_UL2017To2018V1"
+    combined_pfclus_tag_suffix = "UL2017To2018V1"
 
     sc_tags = get_sc_tagnames()
     elepho_tags = get_elepho_tagnames()
+    pfcluseb_tags = get_pfcluseb_tagnames()
+    pfclusee_tags = get_pfclusee_tagnames()
     
     matched_files = glob.glob("{}*".format(args.dbfilebase))
     if matched_files:
@@ -98,17 +134,32 @@ if __name__ == "__main__":
         print "uploading to dev"
         database = "oracle://cms_orcoff_prep/CMS_CONDITIONS"
 
+        
+    tag_files = []
+    if args.sc:
+        tag_files_sc = combine_tags(tags=sc_tags,eras=sc_eras,file_prefix=args.dbfilebase,
+                                    tag_suffix=combined_tag_suffix,database=database,uploadtxt=args.txt)
+        tag_files.extend(tag_files_sc)
+        
+    if args.elepho:
+        tag_files_elepho = combine_tags(tags=elepho_tags,eras=elepho_eras,file_prefix=args.dbfilebase,
+                                        tag_suffix=combined_tag_suffix,database=database,uploadtxt=args.txt)
+        tag_files.extend(tag_files_elepho)
     
-    copy_tags_locally(tags=sc_tags,eras=sc_eras,prefix=args.dbfilebase)
-    copy_tags_locally(tags=elepho_tags,eras=elepho_eras,prefix=args.dbfilebase) 
-    
-    tag_files_sc = combine_tags(tags=sc_tags,eras=sc_eras,file_prefix=args.dbfilebase,tag_suffix=combined_tag_suffix,database=database,uploadtxt=args.txt)
-    tag_files_elepho = combine_tags(tags=elepho_tags,eras=elepho_eras,file_prefix=args.dbfilebase,tag_suffix=combined_tag_suffix,database=database,uploadtxt=args.txt)
-    
-    upload_cmd = "uploadConditions.py {} {}".format(" ".join(tag_files_sc)," ".join(tag_files_elepho))
+    if args.pfclus:
+        tag_files_pfclus = combine_tags(tags=pfcluseb_tags,eras=pfcluseb_eras,file_prefix=args.dbfilebase,
+                                        tag_suffix=combined_pfclus_tag_suffix,database=database,uploadtxt=args.txt)
+        tag_files.extend(tag_files_pfclus)
+        tag_files_pfclus = combine_tags(tags=pfclusee_tags,eras=pfclusee_eras,file_prefix=args.dbfilebase,
+                                        tag_suffix=combined_pfclus_tag_suffix,database=database,uploadtxt=args.txt)
+        tag_files.extend(tag_files_pfclus)
 
-    print upload_cmd
-    import time
-    print "will upload in 10s"
-    time.sleep(10)
-    subprocess.Popen(upload_cmd.split()).communicate()
+    if tag_files == []:
+        print "no objects selected for upload, need to specify at least one of --sc , --phoele, --pfclus"
+    else:
+        upload_cmd = "uploadConditions.py {}".format(" ".join(tag_files))
+        print ""
+        print upload_cmd
+        print "will upload in 10s"
+        time.sleep(10)
+        subprocess.Popen(upload_cmd.split()).communicate()
