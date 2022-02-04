@@ -7,11 +7,11 @@ This is a set of tools useful to E/gamma for interacting with the database. In s
 This needs to compiled inside CMSSW. In theory it has no dependences on its exact location but it expects to be RecoEgamma/EgammaDBTools in the CMSSW src directory. Any recent CMSSW version should work although of course if there are fundamental changes in the DB format, there may be problems
 
 ```
-cmsrel CMSSW_10_2_13
-cd CMSSW_10_2_13/src
+cmsrel CMSSW_12_3_0_pre3
+cd CMSSW_12_3_0_pre3/src
 cmsenv
 git cms-init
-git clone git@github.com:cms-egamma/EgammaDBTools.git RecoEgamma/EgammaDBTools
+git clone git@github.com:swagata87/EgammaDBTools.git RecoEgamma/EgammaDBTools
 scram b -j 16
 ```
 
