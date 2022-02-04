@@ -1,4 +1,3 @@
-
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -8,8 +7,8 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 
-
-#include "CondFormats/EgammaObjects/interface/GBRForestD.h"
+#include "CondFormats/GBRForest/interface/GBRForestD.h"
+//#include "CondFormats/EgammaObjects/interface/GBRForestD.h"
 #include "CondFormats/DataRecord/interface/GBRWrapperRcd.h"
 #include "CondCore/DBOutputService/interface/PoolDBOutputService.h"
 
@@ -74,7 +73,7 @@ void writeGBRForest(cond::service::PoolDBOutputService& dbService,
 		    const std::string& fileLabel)
 {
   const GBRForestD* forest = getForestFromFile(filename,fileLabel);
-  dbService.writeOne(forest,dbService.beginOfTime(),dbLabel);
+  dbService.writeOneIOV(forest,dbService.beginOfTime(),dbLabel);
 }
 
 
