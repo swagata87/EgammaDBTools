@@ -6,6 +6,8 @@ This is a set of tools useful to E/gamma for interacting with the database. In s
 
 This needs to compiled inside CMSSW. In theory it has no dependences on its exact location but it expects to be RecoEgamma/EgammaDBTools in the CMSSW src directory. Any recent CMSSW version should work although of course if there are fundamental changes in the DB format, there may be problems
 
+[Note that currently it does not work in 12_X, so use main branch which works in 10_X] 
+
 ```
 cmsrel CMSSW_12_3_0_pre3
 cd CMSSW_12_3_0_pre3/src
